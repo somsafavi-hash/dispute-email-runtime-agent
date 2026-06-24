@@ -74,13 +74,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check PROD deployment configuration
+        id: prod-config
+        env:
+          PROD_AWS_ROLE_ARN: ${{ vars.PROD_AWS_ROLE_ARN }}
+          PROD_ASANA_BUSH_PROJECT_GID: ${{ vars.PROD_ASANA_BUSH_PROJECT_GID }}
+        run: |
+          if [[ -n "${PROD_AWS_ROLE_ARN}" && -n "${PROD_ASANA_BUSH_PROJECT_GID}" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping PROD deploy because PROD_AWS_ROLE_ARN or PROD_ASANA_BUSH_PROJECT_GID is not configured."
+          fi
+
       - name: Configure AWS credentials
+        if: steps.prod-config.outputs.configured == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ vars.PROD_AWS_ROLE_ARN }}
 
       - name: Deploy CDK stack to PROD
+        if: steps.prod-config.outputs.configured == 'true'
         env:
           ASANA_BUSH_PROJECT_GID: ${{ vars.PROD_ASANA_BUSH_PROJECT_GID }}
           ASANA_WORKSPACE_GID: ${{ vars.PROD_ASANA_WORKSPACE_GID }}

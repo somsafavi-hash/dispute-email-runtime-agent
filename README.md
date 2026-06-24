@@ -134,6 +134,8 @@ Configure these GitHub repository variables before enabling deployments:
 
 The AWS OIDC roles must trust this repository and allow CDK to deploy the stack resources for each environment.
 
+Deploy jobs skip with a GitHub Actions notice until the required environment variables are configured. DEV requires `DEV_AWS_ROLE_ARN` and `DEV_ASANA_BUSH_PROJECT_GID`; PROD requires `PROD_AWS_ROLE_ARN` and `PROD_ASANA_BUSH_PROJECT_GID`.
+
 ## Notes for operators
 
 - The approver for v1 should be Saman Safavi.

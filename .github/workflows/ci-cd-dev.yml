@@ -79,13 +79,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check DEV deployment configuration
+        id: dev-config
+        env:
+          DEV_AWS_ROLE_ARN: ${{ vars.DEV_AWS_ROLE_ARN }}
+          DEV_ASANA_BUSH_PROJECT_GID: ${{ vars.DEV_ASANA_BUSH_PROJECT_GID }}
+        run: |
+          if [[ -n "${DEV_AWS_ROLE_ARN}" && -n "${DEV_ASANA_BUSH_PROJECT_GID}" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping DEV deploy because DEV_AWS_ROLE_ARN or DEV_ASANA_BUSH_PROJECT_GID is not configured."
+          fi
+
       - name: Configure AWS credentials
+        if: steps.dev-config.outputs.configured == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ vars.DEV_AWS_ROLE_ARN }}
 
       - name: Deploy CDK stack to DEV
+        if: steps.dev-config.outputs.configured == 'true'
         env:
           ASANA_BUSH_PROJECT_GID: ${{ vars.DEV_ASANA_BUSH_PROJECT_GID }}
           ASANA_WORKSPACE_GID: ${{ vars.DEV_ASANA_WORKSPACE_GID }}
