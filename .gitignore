@@ -1,0 +1,10 @@
+node_modules/
+cdk.out/
+coverage/
+dist/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+npm-debug.log*
+*.pem

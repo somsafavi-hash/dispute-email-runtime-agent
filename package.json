@@ -1,0 +1,42 @@
+{
+  "name": "dispute-email-runtime-agent",
+  "version": "1.0.0",
+  "description": "AWS Step Functions runtime for preparing dispute emails and gating them on Asana approval.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "cdk": "cdk",
+    "ci": "npm run build && npm test && npm run lint && npm run synth",
+    "lint": "eslint .",
+    "synth": "cdk synth",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.33.1",
+    "@aws-lambda-powertools/metrics": "^2.33.1",
+    "@aws-lambda-powertools/tracer": "^2.33.1",
+    "@aws-sdk/client-dynamodb": "^3.1075.0",
+    "@aws-sdk/client-secrets-manager": "^3.1075.0",
+    "@aws-sdk/client-sfn": "^3.1075.0",
+    "@aws-sdk/lib-dynamodb": "^3.1075.0",
+    "aws-cdk-lib": "^2.260.0",
+    "constructs": "^10.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/aws-lambda": "^8.10.162",
+    "@types/node": "^26.0.0",
+    "aws-cdk": "^2.1128.1",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.5.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.0",
+    "vitest": "^4.1.9"
+  }
+}
