@@ -5,8 +5,9 @@ on:
     branches:
       - main
   push:
-    branches-ignore:
-      - main
+    branches:
+      - "feature/**"
+      - "cursor/**"
   workflow_dispatch:
 
 permissions:
