@@ -103,7 +103,7 @@ npm run ci
 
 Arceus routed CI/CD integration to the `integrate-ci-cd` skill. This repo uses the SOCAPITAL shared reusable GitHub Actions workflows:
 
-- `.github/workflows/ci-cd-dev.yml` runs on pull requests to `main`.
+- `.github/workflows/ci-cd-dev.yml` runs on feature branch pushes and pull requests to `main`.
 - `.github/workflows/ci-cd-prod.yml` runs on pushes to `main`.
 
 The shared workflows call the root `justfile` recipes:
