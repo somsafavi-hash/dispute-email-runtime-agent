@@ -101,12 +101,12 @@ npm run ci
 
 ## CI/CD
 
-Arceus routed CI/CD integration to the `integrate-ci-cd` skill. This repo uses the SOCAPITAL shared reusable GitHub Actions workflows:
+Arceus routed CI/CD integration to the `integrate-ci-cd` skill. This repo uses local GitHub Actions workflows so it does not depend on cross-repository reusable workflow access:
 
 - `.github/workflows/ci-cd-dev.yml` runs on `feature/**` and `cursor/**` branch pushes, plus pull requests to `main`.
 - `.github/workflows/ci-cd-prod.yml` runs on pushes to `main`.
 
-The shared workflows call the root `justfile` recipes:
+The workflows run the same checks as the root `justfile` recipes:
 
 - `setup`
 - `format`
@@ -120,16 +120,19 @@ Configure these GitHub repository variables before enabling deployments:
 
 | Variable                       | Used by | Description                                               |
 | ------------------------------ | ------- | --------------------------------------------------------- |
+| `AWS_REGION`                   | Both    | Optional AWS region override; defaults to `us-east-2`     |
+| `DEV_AWS_ROLE_ARN`             | DEV     | AWS OIDC role ARN for development deploys                 |
 | `DEV_ASANA_BUSH_PROJECT_GID`   | DEV     | Bush project gid for development deploys                  |
 | `DEV_ASANA_WORKSPACE_GID`      | DEV     | Optional workspace gid for development identity lookup    |
 | `DEV_ASANA_PAT_SECRET_NAME`    | DEV     | Secrets Manager secret name for the development Asana PAT |
 | `DEV_CDK_BOOTSTRAP_QUALIFIER`  | DEV     | Optional CDK bootstrap qualifier                          |
+| `PROD_AWS_ROLE_ARN`            | PROD    | AWS OIDC role ARN for production deploys                  |
 | `PROD_ASANA_BUSH_PROJECT_GID`  | PROD    | Bush project gid for production deploys                   |
 | `PROD_ASANA_WORKSPACE_GID`     | PROD    | Optional workspace gid for production identity lookup     |
 | `PROD_ASANA_PAT_SECRET_NAME`   | PROD    | Secrets Manager secret name for the production Asana PAT  |
 | `PROD_CDK_BOOTSTRAP_QUALIFIER` | PROD    | Optional CDK bootstrap qualifier                          |
 
-The shared workflow repository must allow this repository to call reusable workflows, and the AWS OIDC role configuration used by `Spring-Oaks-Capital-LLC/github-workflows` must trust this repository.
+The AWS OIDC roles must trust this repository and allow CDK to deploy the stack resources for each environment.
 
 ## Notes for operators
 

@@ -14,16 +14,93 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-2' }}
+  NODE_VERSION: "24"
+
 jobs:
-  dev:
-    uses: Spring-Oaks-Capital-LLC/github-workflows/.github/workflows/ci-cd-dev.yml@main
-    with:
-      env-vars: |
-        TARGET_ENV=dev
-        ASANA_BUSH_PROJECT_GID=${{ vars.DEV_ASANA_BUSH_PROJECT_GID }}
-        ASANA_WORKSPACE_GID=${{ vars.DEV_ASANA_WORKSPACE_GID }}
-        ASANA_PAT_SECRET_NAME=${{ vars.DEV_ASANA_PAT_SECRET_NAME }}
-        CDK_BOOTSTRAP_QUALIFIER=${{ vars.DEV_CDK_BOOTSTRAP_QUALIFIER }}
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run type check
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Synthesize CDK
+        env:
+          CDK_BOOTSTRAP_QUALIFIER: ${{ vars.DEV_CDK_BOOTSTRAP_QUALIFIER }}
+        run: |
+          set -euo pipefail
+          cdk_args=(--strict)
+          if [[ -n "${CDK_BOOTSTRAP_QUALIFIER:-}" ]]; then
+            cdk_args+=(--context "@aws-cdk/core:bootstrapQualifier=${CDK_BOOTSTRAP_QUALIFIER}")
+          fi
+          npm run synth -- "${cdk_args[@]}"
+
+  deploy-dev:
+    name: Deploy DEV
+    needs: verify
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.DEV_AWS_ROLE_ARN }}
+
+      - name: Deploy CDK stack to DEV
+        env:
+          ASANA_BUSH_PROJECT_GID: ${{ vars.DEV_ASANA_BUSH_PROJECT_GID }}
+          ASANA_WORKSPACE_GID: ${{ vars.DEV_ASANA_WORKSPACE_GID }}
+          ASANA_PAT_SECRET_NAME: ${{ vars.DEV_ASANA_PAT_SECRET_NAME }}
+          CDK_BOOTSTRAP_QUALIFIER: ${{ vars.DEV_CDK_BOOTSTRAP_QUALIFIER }}
+        run: |
+          set -euo pipefail
+          : "${ASANA_BUSH_PROJECT_GID:?DEV_ASANA_BUSH_PROJECT_GID repository variable is required}"
+          cdk_args=(
+            --require-approval never
+            --parameters "AsanaBushProjectGid=${ASANA_BUSH_PROJECT_GID}"
+            --parameters "AsanaWorkspaceGid=${ASANA_WORKSPACE_GID:-}"
+            --parameters "AsanaPatSecretName=${ASANA_PAT_SECRET_NAME:-dispute-email-runtime/asana-pat}"
+          )
+          if [[ -n "${CDK_BOOTSTRAP_QUALIFIER:-}" ]]; then
+            cdk_args+=(--context "@aws-cdk/core:bootstrapQualifier=${CDK_BOOTSTRAP_QUALIFIER}")
+          fi
+          npm run cdk deploy -- "${cdk_args[@]}"
