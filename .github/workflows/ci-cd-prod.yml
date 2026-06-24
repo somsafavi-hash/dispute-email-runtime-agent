@@ -1,0 +1,25 @@
+name: PROD CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  prod:
+    uses: Spring-Oaks-Capital-LLC/github-workflows/.github/workflows/ci-cd-prod.yml@main
+    with:
+      env-vars: |
+        TARGET_ENV=prod
+        ASANA_BUSH_PROJECT_GID=${{ vars.PROD_ASANA_BUSH_PROJECT_GID }}
+        ASANA_WORKSPACE_GID=${{ vars.PROD_ASANA_WORKSPACE_GID }}
+        ASANA_PAT_SECRET_NAME=${{ vars.PROD_ASANA_PAT_SECRET_NAME }}
+        CDK_BOOTSTRAP_QUALIFIER=${{ vars.PROD_CDK_BOOTSTRAP_QUALIFIER }}
+    permissions:
+      id-token: write
+      contents: read

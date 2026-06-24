@@ -1,0 +1,25 @@
+name: DEV CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  dev:
+    uses: Spring-Oaks-Capital-LLC/github-workflows/.github/workflows/ci-cd-dev.yml@main
+    with:
+      env-vars: |
+        TARGET_ENV=dev
+        ASANA_BUSH_PROJECT_GID=${{ vars.DEV_ASANA_BUSH_PROJECT_GID }}
+        ASANA_WORKSPACE_GID=${{ vars.DEV_ASANA_WORKSPACE_GID }}
+        ASANA_PAT_SECRET_NAME=${{ vars.DEV_ASANA_PAT_SECRET_NAME }}
+        CDK_BOOTSTRAP_QUALIFIER=${{ vars.DEV_CDK_BOOTSTRAP_QUALIFIER }}
+    permissions:
+      id-token: write
+      contents: read
