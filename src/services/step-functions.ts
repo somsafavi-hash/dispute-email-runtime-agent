@@ -19,7 +19,9 @@ export interface StartWorkflowExecutionResult {
 export class StepFunctionsService {
   constructor(private readonly client = new SFNClient({})) {}
 
-  async startExecution(input: StartWorkflowExecutionInput): Promise<StartWorkflowExecutionResult> {
+  async startExecution(
+    input: StartWorkflowExecutionInput,
+  ): Promise<StartWorkflowExecutionResult> {
     try {
       const response = await this.client.send(
         new StartExecutionCommand({
@@ -31,7 +33,9 @@ export class StepFunctionsService {
 
       return {
         status: "started",
-        ...(response.executionArn ? { executionArn: response.executionArn } : {}),
+        ...(response.executionArn
+          ? { executionArn: response.executionArn }
+          : {}),
       };
     } catch (error) {
       if (errorName(error) === "ExecutionAlreadyExists") {
@@ -50,7 +54,11 @@ export class StepFunctionsService {
     );
   }
 
-  async sendTaskFailure(taskToken: string, error: string, cause: unknown): Promise<void> {
+  async sendTaskFailure(
+    taskToken: string,
+    error: string,
+    cause: unknown,
+  ): Promise<void> {
     await this.client.send(
       new SendTaskFailureCommand({
         taskToken,
@@ -62,7 +70,9 @@ export class StepFunctionsService {
 }
 
 export function isTaskTokenReplayError(error: unknown): boolean {
-  return ["InvalidToken", "TaskDoesNotExist", "TaskTimedOut"].includes(errorName(error));
+  return ["InvalidToken", "TaskDoesNotExist", "TaskTimedOut"].includes(
+    errorName(error),
+  );
 }
 
 function errorName(error: unknown): string {

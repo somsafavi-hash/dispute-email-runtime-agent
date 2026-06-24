@@ -21,9 +21,15 @@ See [`docs/arceus-discovery.md`](docs/arceus-discovery.md) for the discovery evi
 ```json
 {
   "requestId": "Bush/email/001",
-  "sender": { "email": "saman.safavi@elephant-labs.xyz", "name": "Saman Safavi" },
+  "sender": {
+    "email": "saman.safavi@elephant-labs.xyz",
+    "name": "Saman Safavi"
+  },
   "receiver": { "email": "receiver@example.com" },
-  "approver": { "email": "saman.safavi@elephant-labs.xyz", "name": "Saman Safavi" },
+  "approver": {
+    "email": "saman.safavi@elephant-labs.xyz",
+    "name": "Saman Safavi"
+  },
   "subject": "Document request",
   "emailBody": "Plain-text email body to approve."
 }
@@ -85,12 +91,45 @@ After deploy, register the `AsanaWebhookUrl` output as the Asana webhook target 
 ## Development
 
 ```bash
+npm run format
 npm run build
 npm test
 npm run lint
 npm run synth
 npm run ci
 ```
+
+## CI/CD
+
+Arceus routed CI/CD integration to the `integrate-ci-cd` skill. This repo uses the SOCAPITAL shared reusable GitHub Actions workflows:
+
+- `.github/workflows/ci-cd-dev.yml` runs on pull requests to `main`.
+- `.github/workflows/ci-cd-prod.yml` runs on pushes to `main`.
+
+The shared workflows call the root `justfile` recipes:
+
+- `setup`
+- `format`
+- `lint`
+- `type-check`
+- `test`
+- `build`
+- `deploy`
+
+Configure these GitHub repository variables before enabling deployments:
+
+| Variable                       | Used by | Description                                               |
+| ------------------------------ | ------- | --------------------------------------------------------- |
+| `DEV_ASANA_BUSH_PROJECT_GID`   | DEV     | Bush project gid for development deploys                  |
+| `DEV_ASANA_WORKSPACE_GID`      | DEV     | Optional workspace gid for development identity lookup    |
+| `DEV_ASANA_PAT_SECRET_NAME`    | DEV     | Secrets Manager secret name for the development Asana PAT |
+| `DEV_CDK_BOOTSTRAP_QUALIFIER`  | DEV     | Optional CDK bootstrap qualifier                          |
+| `PROD_ASANA_BUSH_PROJECT_GID`  | PROD    | Bush project gid for production deploys                   |
+| `PROD_ASANA_WORKSPACE_GID`     | PROD    | Optional workspace gid for production identity lookup     |
+| `PROD_ASANA_PAT_SECRET_NAME`   | PROD    | Secrets Manager secret name for the production Asana PAT  |
+| `PROD_CDK_BOOTSTRAP_QUALIFIER` | PROD    | Optional CDK bootstrap qualifier                          |
+
+The shared workflow repository must allow this repository to call reusable workflows, and the AWS OIDC role configuration used by `Spring-Oaks-Capital-LLC/github-workflows` must trust this repository.
 
 ## Notes for operators
 

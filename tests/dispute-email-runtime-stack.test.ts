@@ -34,7 +34,9 @@ describe("DisputeEmailRuntimeStack", () => {
       },
     });
 
-    const stateMachines = template.findResources("AWS::StepFunctions::StateMachine");
+    const stateMachines = template.findResources(
+      "AWS::StepFunctions::StateMachine",
+    );
     const definition = JSON.stringify(Object.values(stateMachines)[0]);
     expect(definition).toContain("CreateAsanaApprovalAndWait");
     expect(definition).toContain("lambda:invoke.waitForTaskToken");

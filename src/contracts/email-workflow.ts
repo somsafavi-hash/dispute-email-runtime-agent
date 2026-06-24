@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-const emailSchema = z.string().trim().email().transform((value) => value.toLowerCase());
+const emailSchema = z
+  .string()
+  .trim()
+  .email()
+  .transform((value) => value.toLowerCase());
 const nonEmptyString = z.string().trim().min(1);
 
 export const identitySchema = z.object({
@@ -14,7 +18,12 @@ export const prepareEmailRequestSchema = z.object({
   sender: identitySchema,
   receiver: identitySchema,
   approver: identitySchema,
-  subject: z.string().trim().min(1).max(998).default("Dispute email draft approval"),
+  subject: z
+    .string()
+    .trim()
+    .min(1)
+    .max(998)
+    .default("Dispute email draft approval"),
   emailBody: z.string().trim().min(1).max(100_000),
 });
 
@@ -74,7 +83,9 @@ export type Identity = z.infer<typeof identitySchema>;
 export type PrepareEmailRequest = z.infer<typeof prepareEmailRequestSchema>;
 export type PreparedEmail = z.infer<typeof preparedEmailSchema>;
 export type WorkflowInput = z.infer<typeof workflowInputSchema>;
-export type CreateApprovalTaskEvent = z.infer<typeof createApprovalTaskEventSchema>;
+export type CreateApprovalTaskEvent = z.infer<
+  typeof createApprovalTaskEventSchema
+>;
 export type ApprovalLookup = z.infer<typeof approvalLookupSchema>;
 export type AsanaWebhookPayload = z.infer<typeof asanaWebhookPayloadSchema>;
 

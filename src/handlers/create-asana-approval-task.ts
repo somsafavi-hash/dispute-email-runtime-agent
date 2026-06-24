@@ -10,7 +10,10 @@ export async function handler(event: unknown) {
   try {
     const config = await loadApprovalWorkerConfig();
     const input = createApprovalTaskEventSchema.parse(event);
-    const asana = new AsanaClient(config.asanaAccessToken, config.asanaWorkspaceGid);
+    const asana = new AsanaClient(
+      config.asanaAccessToken,
+      config.asanaWorkspaceGid,
+    );
     const tokenStore = new ApprovalTokenStore(config.approvalTableName);
 
     const approver = await asana.resolveUser(input.approver);

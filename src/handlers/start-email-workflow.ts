@@ -1,11 +1,17 @@
-import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2 } from "aws-lambda";
+import type {
+  APIGatewayProxyEventV2,
+  APIGatewayProxyStructuredResultV2,
+} from "aws-lambda";
 import { MetricUnit } from "@aws-lambda-powertools/metrics";
 import { ZodError } from "zod";
 
 import { prepareEmailRequestSchema } from "../contracts/email-workflow.js";
 import { metrics, logger } from "../observability/powertools.js";
 import { loadStartWorkflowConfig } from "../services/config.js";
-import { buildWorkflowInput, executionNameForRequestId } from "../services/email.js";
+import {
+  buildWorkflowInput,
+  executionNameForRequestId,
+} from "../services/email.js";
 import { StepFunctionsService } from "../services/step-functions.js";
 
 const stepFunctions = new StepFunctionsService();
@@ -73,7 +79,10 @@ function errorResponse(error: unknown): APIGatewayProxyStructuredResultV2 {
   });
 }
 
-function jsonResponse(statusCode: number, body: unknown): APIGatewayProxyStructuredResultV2 {
+function jsonResponse(
+  statusCode: number,
+  body: unknown,
+): APIGatewayProxyStructuredResultV2 {
   return {
     statusCode,
     headers: {

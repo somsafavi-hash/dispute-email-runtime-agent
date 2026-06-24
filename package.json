@@ -8,6 +8,7 @@
     "build": "tsc --noEmit",
     "cdk": "cdk",
     "ci": "npm run build && npm test && npm run lint && npm run synth",
+    "format": "prettier --check .",
     "lint": "eslint .",
     "synth": "cdk synth",
     "test": "vitest run"
@@ -34,6 +35,7 @@
     "aws-cdk": "^2.1128.1",
     "esbuild": "^0.28.1",
     "eslint": "^10.5.0",
+    "prettier": "^3.8.4",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.62.0",

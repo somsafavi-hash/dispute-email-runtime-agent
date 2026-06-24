@@ -68,7 +68,10 @@ export class AsanaClient {
       : identity;
   }
 
-  async assertProjectAccess(identity: Identity, projectGid: string): Promise<void> {
+  async assertProjectAccess(
+    identity: Identity,
+    projectGid: string,
+  ): Promise<void> {
     const projectUsers = await this.listProjectUsers(projectGid);
     const normalizedEmail = normalizeEmail(identity.email);
     const hasAccess = projectUsers.some((user) => {
@@ -77,14 +80,18 @@ export class AsanaClient {
     });
 
     if (!hasAccess) {
-      throw new AsanaError("Approver must have access to the configured Asana project", 403, {
-        projectGid,
-        approver: {
-          asanaGid: identity.asanaGid,
-          email: identity.email,
-          name: identity.name,
+      throw new AsanaError(
+        "Approver must have access to the configured Asana project",
+        403,
+        {
+          projectGid,
+          approver: {
+            asanaGid: identity.asanaGid,
+            email: identity.email,
+            name: identity.name,
+          },
         },
-      });
+      );
     }
   }
 
@@ -92,7 +99,8 @@ export class AsanaClient {
     const response = await this.get<AsanaResponse<AsanaTask>>(
       `/tasks/${encodeURIComponent(taskGid)}`,
       {
-        opt_fields: "gid,completed,completed_by.gid,completed_by.name,completed_by.email,permalink_url",
+        opt_fields:
+          "gid,completed,completed_by.gid,completed_by.name,completed_by.email,permalink_url",
       },
     );
     return response.data;
@@ -129,16 +137,25 @@ export class AsanaClient {
   }
 
   private async getUser(gid: string): Promise<AsanaUser> {
-    const response = await this.get<AsanaResponse<AsanaUser>>(`/users/${encodeURIComponent(gid)}`, {
-      opt_fields: "gid,name,email",
-    });
+    const response = await this.get<AsanaResponse<AsanaUser>>(
+      `/users/${encodeURIComponent(gid)}`,
+      {
+        opt_fields: "gid,name,email",
+      },
+    );
     return response.data;
   }
 
-  private async findWorkspaceUserByEmail(email: string): Promise<AsanaUser | undefined> {
+  private async findWorkspaceUserByEmail(
+    email: string,
+  ): Promise<AsanaUser | undefined> {
     const users = await this.listWorkspaceUsers();
     const normalizedEmail = normalizeEmail(email);
-    return users.find((user) => (user.email ? normalizeEmail(user.email) : undefined) === normalizedEmail);
+    return users.find(
+      (user) =>
+        (user.email ? normalizeEmail(user.email) : undefined) ===
+        normalizedEmail,
+    );
   }
 
   private async listWorkspaceUsers(): Promise<AsanaUser[]> {
@@ -154,13 +171,19 @@ export class AsanaClient {
   }
 
   private async listProjectUsers(projectGid: string): Promise<AsanaUser[]> {
-    return this.getAllPages<AsanaUser>(`/projects/${encodeURIComponent(projectGid)}/users`, {
-      opt_fields: "gid,name,email",
-      limit: "100",
-    });
+    return this.getAllPages<AsanaUser>(
+      `/projects/${encodeURIComponent(projectGid)}/users`,
+      {
+        opt_fields: "gid,name,email",
+        limit: "100",
+      },
+    );
   }
 
-  private async getAllPages<T>(path: string, query: Record<string, string>): Promise<T[]> {
+  private async getAllPages<T>(
+    path: string,
+    query: Record<string, string>,
+  ): Promise<T[]> {
     const values: T[] = [];
     let url: URL | undefined = this.buildUrl(path, query);
 
@@ -173,7 +196,10 @@ export class AsanaClient {
     return values;
   }
 
-  private async get<T>(path: string, query?: Record<string, string>): Promise<T> {
+  private async get<T>(
+    path: string,
+    query?: Record<string, string>,
+  ): Promise<T> {
     return this.requestUrl<T>(this.buildUrl(path, query));
   }
 
@@ -186,7 +212,9 @@ export class AsanaClient {
 
   private buildUrl(path: string, query: Record<string, string> = {}): URL {
     const url = new URL(`${this.baseUrl}${path}`);
-    Object.entries(query).forEach(([key, value]) => url.searchParams.set(key, value));
+    Object.entries(query).forEach(([key, value]) =>
+      url.searchParams.set(key, value),
+    );
     return url;
   }
 
@@ -203,7 +231,11 @@ export class AsanaClient {
 
     if (!response.ok) {
       const body = await response.text();
-      throw new AsanaError(`Asana request failed (${response.status})`, response.status, { body });
+      throw new AsanaError(
+        `Asana request failed (${response.status})`,
+        response.status,
+        { body },
+      );
     }
 
     return (await response.json()) as T;

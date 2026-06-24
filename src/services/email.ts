@@ -16,7 +16,10 @@ export function prepareEmail(request: PrepareEmailRequest): PreparedEmail {
   };
 }
 
-export function buildWorkflowInput(request: PrepareEmailRequest, asanaProjectGid: string): WorkflowInput {
+export function buildWorkflowInput(
+  request: PrepareEmailRequest,
+  asanaProjectGid: string,
+): WorkflowInput {
   const requestId = request.requestId ?? randomUUID();
   return {
     requestId,
@@ -30,8 +33,14 @@ export function buildWorkflowInput(request: PrepareEmailRequest, asanaProjectGid
   };
 }
 
-export function executionNameForRequestId(requestId: string, prefix = "dispute-email-"): string {
-  const hash = createHash("sha256").update(requestId).digest("hex").slice(0, 12);
+export function executionNameForRequestId(
+  requestId: string,
+  prefix = "dispute-email-",
+): string {
+  const hash = createHash("sha256")
+    .update(requestId)
+    .digest("hex")
+    .slice(0, 12);
   const safeRequestId = requestId.replace(/[^A-Za-z0-9_-]/g, "-").slice(0, 52);
   return `${prefix}${safeRequestId}-${hash}`.slice(0, 80);
 }

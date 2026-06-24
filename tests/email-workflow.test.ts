@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { prepareEmailRequestSchema } from "../src/contracts/email-workflow.js";
-import { buildWorkflowInput, executionNameForRequestId } from "../src/services/email.js";
+import {
+  buildWorkflowInput,
+  executionNameForRequestId,
+} from "../src/services/email.js";
 
 describe("email workflow contract", () => {
   it("accepts sender, receiver, approver, and email body", () => {
@@ -9,7 +12,10 @@ describe("email workflow contract", () => {
       requestId: "Bush/email/001",
       sender: { email: "Saman.Safavi@elephant-labs.xyz", name: "Saman Safavi" },
       receiver: { email: "gthomas@springoakscapital.com", name: "Greg Thomas" },
-      approver: { email: "saman.safavi@elephant-labs.xyz", name: "Saman Safavi" },
+      approver: {
+        email: "saman.safavi@elephant-labs.xyz",
+        name: "Saman Safavi",
+      },
       emailBody: "Please approve this dispute email.",
     });
 

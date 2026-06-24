@@ -16,7 +16,9 @@ const TTL_SECONDS = 7 * 24 * 60 * 60;
 export class ApprovalTokenStore {
   constructor(
     private readonly tableName: string,
-    private readonly client = DynamoDBDocumentClient.from(new DynamoDBClient({})),
+    private readonly client = DynamoDBDocumentClient.from(
+      new DynamoDBClient({}),
+    ),
   ) {}
 
   async put(approval: ApprovalLookup): Promise<void> {

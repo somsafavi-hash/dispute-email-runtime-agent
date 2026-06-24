@@ -53,3 +53,24 @@ Invocation hint used as implementation direction:
 ## Design decision
 
 No new Pokemon agent was created. The existing `ash` and `machamp` agents were used as ownership boundaries for this standalone runtime workflow.
+
+## CI/CD routing result
+
+Task read:
+
+Add a CI/CD pipeline to this AWS TypeScript/CDK runtime repository.
+
+Primary recommendation:
+
+- No additional implementation agent is needed for this narrow task. Use the `integrate-ci-cd` skill directly.
+
+Supporting skills:
+
+- `apply-engineering-guidelines`: baseline SOCAPITAL engineering standards for testing, AWS/CDK, and deployment.
+- `integrate-ci-cd`: adds the required `justfile` recipes and GitHub Actions caller workflows.
+
+Invocation hint used as implementation direction:
+
+```text
+/arceus Add CI/CD to this AWS CDK TypeScript repo.
+```

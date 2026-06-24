@@ -7,7 +7,9 @@ const app = new cdk.App();
 
 new DisputeEmailRuntimeStack(app, "DisputeEmailRuntimeStack", {
   env: {
-    ...(process.env.CDK_DEFAULT_ACCOUNT ? { account: process.env.CDK_DEFAULT_ACCOUNT } : {}),
+    ...(process.env.CDK_DEFAULT_ACCOUNT
+      ? { account: process.env.CDK_DEFAULT_ACCOUNT }
+      : {}),
     region: process.env.CDK_DEFAULT_REGION ?? "us-east-2",
   },
 });

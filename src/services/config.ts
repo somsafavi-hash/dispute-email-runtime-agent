@@ -18,7 +18,8 @@ export function loadStartWorkflowConfig(
   return {
     asanaProjectGid: requiredEnv(env, "ASANA_BUSH_PROJECT_GID"),
     stateMachineArn: requiredEnv(env, "STATE_MACHINE_ARN"),
-    executionNamePrefix: optionalEnv(env, "EXECUTION_NAME_PREFIX") ?? "dispute-email-",
+    executionNamePrefix:
+      optionalEnv(env, "EXECUTION_NAME_PREFIX") ?? "dispute-email-",
   };
 }
 
@@ -27,7 +28,9 @@ export async function loadApprovalWorkerConfig(
 ): Promise<ApprovalWorkerConfig> {
   const workspaceGid = optionalEnv(env, "ASANA_WORKSPACE_GID");
   return {
-    asanaAccessToken: await getSecretString(requiredEnv(env, "ASANA_ACCESS_TOKEN_SECRET_ARN")),
+    asanaAccessToken: await getSecretString(
+      requiredEnv(env, "ASANA_ACCESS_TOKEN_SECRET_ARN"),
+    ),
     ...(workspaceGid ? { asanaWorkspaceGid: workspaceGid } : {}),
     approvalTableName: requiredEnv(env, "APPROVAL_TABLE_NAME"),
   };
